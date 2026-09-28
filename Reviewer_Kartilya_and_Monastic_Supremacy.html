@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reviewer: Kartilya ng Katipunan & Monastic Supremacy</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--ink:#1c2233;--mute:#667085;--line:#e3e1db;--accent:#a4161a;--good:#1e9e57;--goodbg:#e3f6ea;--bad:#d93636;--badbg:#fde8e8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Georgia,'Times New Roman',serif}
+header{background:var(--ink);color:#fff;padding:28px 20px 22px;text-align:center}
+header h1{margin:0;font-size:clamp(1.4rem,4vw,2.1rem);letter-spacing:.5px}
+header p{margin:6px 0 0;color:#c9ced9;font:14px system-ui,sans-serif}
+nav{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);display:flex;gap:4px;overflow-x:auto;padding:8px 12px;font-family:system-ui,sans-serif}
+nav button{flex:1 0 auto;border:0;background:none;padding:10px 14px;border-radius:8px;font:600 14px system-ui,sans-serif;color:var(--mute);cursor:pointer;white-space:nowrap}
+nav button.on{background:var(--accent);color:#fff}
+nav .sc{font-weight:400;opacity:.85;margin-left:4px}
+main{max-width:780px;margin:0 auto;padding:20px 14px 60px}
+.bar{display:flex;justify-content:space-between;align-items:center;font:600 14px system-ui,sans-serif;color:var(--mute);margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.bar button,.btn{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:8px 14px;font:600 13px system-ui,sans-serif;cursor:pointer;color:var(--ink)}
+.bar button:hover,.btn:hover{border-color:var(--accent);color:var(--accent)}
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 16px 14px;margin-bottom:14px}
+.q .t{display:inline-block;font:700 11px system-ui,sans-serif;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.q .tx{margin:0 0 12px;font-size:1.02rem}
+.q .tx b{color:var(--accent);margin-right:4px}
+.opt{display:block;width:100%;text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:10px 14px;margin-bottom:8px;font:15px system-ui,sans-serif;color:var(--ink);cursor:pointer;transition:.12s}
+.opt:hover:not(:disabled){border-color:var(--accent);background:#fdf5f5}
+.opt:disabled{cursor:default}
+.opt.correct{background:var(--goodbg);border-color:var(--good);color:#0d6b37;font-weight:600}
+.opt.wrong{background:var(--badbg);border-color:var(--bad);color:#a11d1d;font-weight:600}
+.tf{display:flex;gap:10px}.tf .opt{text-align:center;margin:0;font-weight:600}
+.idrow{display:flex;gap:8px}
+.idrow input{flex:1;border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;font:15px system-ui,sans-serif;min-width:0}
+.idrow input:focus{outline:none;border-color:var(--accent)}
+.idrow input.correct{background:var(--goodbg);border-color:var(--good);color:#0d6b37;font-weight:600}
+.idrow input.wrong{background:var(--badbg);border-color:var(--bad);color:#a11d1d;font-weight:600}
+.fb{margin-top:10px;padding:9px 12px;border-radius:8px;font:14px system-ui,sans-serif;display:none}
+.fb.show{display:block}
+.fb.ok{background:var(--goodbg);color:#0d6b37}
+.fb.no{background:var(--badbg);color:#a11d1d}
+.fb b{font-weight:700}
+.sec{display:none}.sec.on{display:block}
+.key h3{margin:22px 0 8px;font-size:1.1rem;color:var(--accent)}
+.key ol{margin:0;padding-left:0;list-style:none;columns:1}
+.key li{padding:7px 0;border-bottom:1px solid var(--line);font:14px system-ui,sans-serif;display:flex;gap:10px}
+.key li span:first-child{flex:0 0 32px;font-weight:700;color:var(--mute)}
+.key li span:last-child b{color:var(--good)}
+.key .qq{display:block;color:var(--mute);font-size:12.5px}
+.final{background:var(--ink);color:#fff;border-radius:12px;padding:16px;text-align:center;margin-bottom:16px;font:600 15px system-ui,sans-serif;display:none}
+.final.show{display:block}
+@media(max-width:480px){.tf{flex-direction:column}.idrow{flex-direction:column}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Reviewer: Kartilya ng Katipunan &amp; Monastic Supremacy</h1>
+  <p>40 Multiple Choice · 15 Identification · 20 True or False · Answer Key included</p>
+</header>
+<nav id="nav"></nav>
+<main>
+  <div class="final" id="final"></div>
+  <section class="sec" id="s-mcq"></section>
+  <section class="sec" id="s-id"></section>
+  <section class="sec" id="s-tf"></section>
+  <section class="sec key" id="s-key"></section>
+</main>
+
+<script>
+/* ---------- DATA ---------- */
+// [question, [options], correctIndex]
+const MCQ = [
+// ===== Kartilya ng Katipunan =====
+["Who wrote the Kartilya ng Katipunan?",["Andrés Bonifacio","José Rizal","Apolinario Mabini","Emilio Jacinto"],3],
+["How many rules and teachings are in the Kartilya ng Katipunan?",["10","12","14","20"],2],
+["What was the aim of the Katipunan?",["Reforms under Spanish rule","Representation in the Spanish Cortes","Complete freedom from Spanish rule","Conversion of natives to Christianity"],2],
+["Which aliases did Emilio Jacinto use to protect his identity?",["Laong Laan and Dimasalang","Maypagasa and Magdalo","Plaridel and Tikbalang","Pingkian and Dimasilaw"],3],
+["Where was Emilio Jacinto born?",["Tondo, Manila","Kawit, Cavite","Calamba, Laguna","Malolos, Bulacan"],0],
+["Where did Jacinto study law, although he did not finish his studies?",["Ateneo de Manila","University of Santo Tomas","University of the Philippines","San Juan de Letran"],1],
+["In what year did Emilio Jacinto join the Katipunan?",["1872","1889","1892","1894"],3],
+["The Propaganda Movement mainly sought:",["Independence through war","Reforms under Spanish rule","The overthrow of colonial rule","The expulsion of all Spaniards"],1],
+["The Revolutionary Movement used which method?",["Armed struggle and revolutionary action","Peaceful writings only","Petitions to the King","Diplomatic negotiations"],0],
+["Which trio is associated with the Propaganda Movement?",["Bonifacio, Jacinto, Aguinaldo","Luna, Mabini, Aguinaldo","Rizal, Del Pilar, López Jaena","Burgos, Gomez, Zamora"],2],
+["Which fraternal organization promoted liberty, equality, fraternity, and social reform among Filipino reformists?",["Cofradia","La Liga Filipina","Katipunan","Masonry"],3],
+["In what year were Gomburza executed?",["1869","1872","1889","1896"],1],
+["La Solidaridad, the newspaper of the reformists, was published in:",["1872","1880","1889","1895"],2],
+["When did José Rizal found La Liga Filipina?",["July 6, 1892","June 12, 1898","January 1, 1893","July 3, 1892"],3],
+["Where was Rizal exiled after his arrest in 1892?",["Bilibid","Dapitan","Guam","Fort Santiago"],1],
+["After Rizal's arrest, the group led by Andrés Bonifacio became associated with:",["The Katipunan","The Propaganda Movement","The Masons","La Solidaridad"],0],
+["Kartilya Rule 1 teaches that a person's worth is measured by:",["Wealth and property","Beauty and appearance","Character and integrity","Social status"],2],
+["Which Kartilya teaching tells us to treat women with respect as equal human beings?",["Rule 3","Rule 4","Rule 6","Rule 9"],1],
+["Which Kartilya rule advises humility and not boasting about your accomplishments?",["Rule 8","Rule 9","Rule 10","Rule 11"],3],
+["Which Kartilya rule says to value your country and its welfare above selfish interests?",["Rule 6","Rule 7","Rule 8","Rule 9"],2],
+// ===== Monastic Supremacy =====
+["The phrase \"God, Glory, and Gold\" refers to the motives of:",["Spanish expeditions","The Propaganda Movement","The Katipunan","American colonizers"],0],
+["Which of these was NOT among the religious orders that arrived in the Philippines?",["Augustinians","Benedictines","Dominicans","Recollects"],1],
+["Monastic Supremacy refers to the friars' service to:",["The Pope alone","Both God and King","The Filipino people","The Governor-General only"],1],
+["Who controlled education, religion, and community life during the Spanish era?",["Gobernadorcillos","Cabezas de barangay","The friars","The Guardia Civil"],2],
+["Voting privileges were in the hands of:",["Municipal judges","Parish priests","Lay officials","The Governor-General"],1],
+["Which work of Marcelo H. del Pilar satirized the friars' prayers?",["Noli Me Tangere","Sa Mga Kababayang Dalaga","Dasalan at Tocsohan","El Filibusterismo"],2],
+["Which work of Del Pilar exposed the friars' power and invented devotions?",["La Soberanía Monacal","La Solidaridad","Kartilya","Pasyon"],0],
+["Which was NOT a way friars acquired land?",["Royal bequests","Foreclosures of mortgages","Land grabbing","Free distribution of land to tenants"],3],
+["A hacienda was a:",["Small church chapel","Public marketplace","Massive agricultural estate owned by religious orders or wealthy individuals","Spanish military fort"],2],
+["Under Polo y Servicio, men aged ___ were required to render forced labor.",["10 to 40","16 to 60","18 to 50","21 to 65"],1],
+["How many days of forced labor per year did Polo y Servicio require?",["15 days","30 days","40 days","60 days"],2],
+["The polistas were:",["Spanish tax collectors","Parish priests","Able-bodied native men who rendered labor","Wealthy landowners"],2],
+["The Reduccion Policy forced natives to:",["Migrate to Spain","Relocate scattered settlements into centralized grid towns","Work only on haciendas","Leave the Catholic faith"],1],
+["The Reduccion Policy served as the:",["Spatial blueprint for Spanish colonization and religious domination","Basis of Filipino education","Start of the Katipunan","Tax collection system"],0],
+["In Del Pilar's exposé, friars continuously invented new:",["Laws for the Governor-General","Trade routes","Military units","Devotions, novenas, and lavish patron saint fiestas"],3],
+["Educational control under the friars involved:",["Free public universities","Enforcement of ignorance and a Board of Censorship","Teaching Filipino nationalism","Secular teachers only"],1],
+["Under the political aspect, friars imposed forced labor for:",["Trading ships","Churches, convents, and public works","Private schools","Foreign embassies"],1],
+["Under the religious aspect, what was required for social and civic matters?",["A Governor's decree","A court order","A curate's approval","A police permit"],2],
+["Filipinos under friar land domination faced:",["Low taxes and free land","High taxes, debt, and displacement","Equal land distribution","Tax exemptions"],1],
+["The overall effect of Monastic Supremacy on Filipinos was:",["Acceptance of Spanish rule","Sparked resentment and resistance","Immediate independence","Peaceful cooperation"],1],
+];
+
+// [question, [accepted answers], display answer]
+const ID = [
+["Author of the Kartilya ng Katipunan.",["emilio jacinto","jacinto"],"Emilio Jacinto"],
+["Revolutionary group established to gain complete freedom from Spanish rule.",["katipunan","the katipunan"],"Katipunan"],
+["Movement that sought reforms through peaceful and intellectual means.",["propaganda movement","propaganda","the propaganda movement"],"Propaganda Movement"],
+["Organization founded by Rizal on July 3, 1892.",["la liga filipina","liga filipina"],"La Liga Filipina"],
+["One of the two aliases used by Emilio Jacinto (either answer is accepted).",["pingkian","dimasilaw"],"Pingkian / Dimasilaw"],
+["Newspaper of the reformists first published in 1889.",["la solidaridad","solidaridad"],"La Solidaridad"],
+["Place where Rizal was exiled after his 1892 arrest.",["dapitan"],"Dapitan"],
+["Fraternal organization that promoted liberty, equality, and fraternity among Filipino reformists.",["masonry","freemasonry","masons"],"Masonry"],
+["Civil policy requiring 40 days of forced labor per year for public works.",["polo y servicio","polo y servicios","polo","polo y servicio system"],"Polo y Servicio"],
+["Policy that forced scattered native settlements into centralized grid towns.",["reduccion","reduccion policy","reducciones"],"Reduccion (Policy)"],
+["Massive agricultural estate owned by religious orders or wealthy individuals.",["hacienda","haciendas"],"Hacienda"],
+["Term for the able-bodied native men (aged 16 to 60) who rendered forced labor.",["polistas","polista"],"Polistas"],
+["Work of Marcelo H. del Pilar that satirized the friars' prayers.",["dasalan at tocsohan","dasalan at tocsohan"],"Dasalan at Tocsohan"],
+["Work of Marcelo H. del Pilar exposing the friars' invented devotions and fiestas.",["la soberania monacal","soberania monacal"],"La Soberanía Monacal"],
+["Number of days of forced labor required per year under Polo y Servicio.",["40","forty","40 days","forty days"],"40 days"],
+];
+
+// [statement, isTrue, explanation]
+const TF = [
+["The Kartilya ng Katipunan was written by Andrés Bonifacio.",false,"It was written by Emilio Jacinto."],
+["The Kartilya ng Katipunan contains fourteen rules and teachings.",true,"Jacinto wrote fourteen rules and teachings."],
+["The Propaganda Movement sought independence through armed struggle.",false,"It sought reforms through peaceful, intellectual means. Armed struggle belonged to the Revolutionary Movement."],
+["Emilio Jacinto completed his law studies at the University of Santo Tomas.",false,"He studied law at UST but did not complete his studies."],
+["Rizal was arrested on July 6, 1892, only days after founding La Liga Filipina.",true,"La Liga was founded July 3, 1892; Rizal was arrested July 6, 1892."],
+["Masonry became influential among Filipino reformists during the Spanish colonial period.",true,"It promoted liberty, equality, fraternity, and social reform."],
+["Kartilya Rule 1 says a person's worth is measured by wealth and social status.",false,"Rule 1 says worth is measured by character and integrity, not wealth, beauty, or status."],
+["The Kartilya teaches that all people are equal regardless of position, wealth, or background.",true,"This is Rule 14."],
+["The Katipunan was established merely to seek reforms under Spanish rule.",false,"It aimed at complete freedom from Spanish rule."],
+["Emilio Jacinto joined the Katipunan in 1894.",true,"He joined in 1894 and used the aliases Pingkian and Dimasilaw."],
+["Monastic Supremacy meant the friars served both God and King.",true,"Friars controlled education, religion, and community life."],
+["During Monastic Supremacy, voting privileges were held by lay officials.",false,"Voting privileges were in the hands of parish priests."],
+["Polo y Servicio required men aged 16 to 60 to give 40 days of labor per year.",true,"Polistas rendered forced labor on public works."],
+["The Reduccion Policy allowed natives to keep living in scattered settlements.",false,"It forced scattered settlements into centralized grid towns."],
+["Friars acquired lands through royal bequests, donations, pressured purchases, foreclosures, and land grabbing.",true,"These were the means by which friars dominated land ownership."],
+["Marcelo H. del Pilar praised the friars in Dasalan at Tocsohan.",false,"He satirized the friars in that work."],
+["Haciendas were owned only by the government.",false,"Haciendas were owned by religious orders or wealthy individuals."],
+["A curate's approval was required for social and civic matters.",true,"Parish priests controlled essential documents and the census."],
+["Friars limited themselves to religious matters and never interfered in government.",false,"Friars interfered in government affairs, including forced labor and lay officials' authority."],
+["Monastic Supremacy sparked resentment and resistance among Filipinos.",true,"Propagandists like Del Pilar exposed it."],
+];
+
+/* ---------- HELPERS ---------- */
+const $ = s => document.querySelector(s);
+const L = "ABCD";
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const norm = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
+const state = {mcq:{}, id:{}, tf:{}};   // id -> true/false once answered
+const totals = {mcq:MCQ.length, id:ID.length, tf:TF.length};
+const names = {mcq:"Multiple Choice", id:"Identification", tf:"True or False", key:"Answer Key"};
+
+function score(k){ const v=Object.values(state[k]); return [v.filter(Boolean).length, v.length]; }
+function updateNav(){
+  $("#nav").innerHTML = ["mcq","id","tf","key"].map(k=>{
+    const sc = k==="key" ? "" : `<span class="sc">${score(k)[0]}/${totals[k]}</span>`;
+    return `<button data-k="${k}" class="${current===k?"on":""}">${names[k]}${sc}</button>`;
+  }).join("");
+  document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>show(b.dataset.k));
+  const done = ["mcq","id","tf"].every(k=>score(k)[1]===totals[k]);
+  const f=$("#final");
+  if(done){ const t=["mcq","id","tf"].reduce((a,k)=>a+score(k)[0],0); f.textContent=`All done! Total score: ${t} / 75 (${Math.round(t/75*100)}%)`; f.classList.add("show"); }
+  else f.classList.remove("show");
+}
+function bar(k){
+  return `<div class="bar"><span id="cnt-${k}"></span><button onclick="resetSec('${k}')">↺ Retake this section</button></div>`;
+}
+function refreshCount(k){ const [c,a]=score(k); const el=$("#cnt-"+k); if(el) el.textContent=`Answered ${a}/${totals[k]} · Correct ${c}`; updateNav(); }
+
+/* ---------- RENDER ---------- */
+function renderMCQ(){
+  $("#s-mcq").innerHTML = bar("mcq") + MCQ.map((q,i)=>`
+    <div class="q" id="mcq-${i}"><span class="t">Multiple Choice</span>
+    <p class="tx"><b>${i+1}.</b> ${esc(q[0])}</p>
+    ${q[1].map((o,j)=>`<button class="opt" data-i="${i}" data-j="${j}"><b>${L[j]}.</b> ${esc(o)}</button>`).join("")}
+    <div class="fb"></div></div>`).join("");
+  document.querySelectorAll("#s-mcq .opt").forEach(b=>b.onclick=()=>answerMCQ(+b.dataset.i,+b.dataset.j));
+  refreshCount("mcq");
+}
+function answerMCQ(i,j){
+  if(i in state.mcq) return;
+  const [,opts,c]=MCQ[i], ok=j===c, card=$("#mcq-"+i), btns=card.querySelectorAll(".opt");
+  state.mcq[i]=ok;
+  btns.forEach((b,x)=>{ b.disabled=true; if(x===c) b.classList.add("correct"); else if(x===j) b.classList.add("wrong"); });
+  const fb=card.querySelector(".fb"); fb.className="fb show "+(ok?"ok":"no");
+  fb.innerHTML = ok ? "✓ Correct!" : `✗ Wrong. Correct answer: <b>${L[c]}. ${esc(opts[c])}</b>`;
+  refreshCount("mcq");
+}
+
+function renderID(){
+  $("#s-id").innerHTML = bar("id") + ID.map((q,i)=>`
+    <div class="q" id="id-${i}"><span class="t">Identification</span>
+    <p class="tx"><b>${i+1}.</b> ${esc(q[0])}</p>
+    <div class="idrow"><input type="text" placeholder="Type your answer…" autocomplete="off" data-i="${i}">
+    <button class="btn" data-i="${i}">Check</button></div><div class="fb"></div></div>`).join("");
+  document.querySelectorAll("#s-id .btn").forEach(b=>b.onclick=()=>answerID(+b.dataset.i));
+  document.querySelectorAll("#s-id input").forEach(inp=>inp.addEventListener("keydown",e=>{ if(e.key==="Enter") answerID(+inp.dataset.i); }));
+  refreshCount("id");
+}
+function answerID(i){
+  if(i in state.id) return;
+  const card=$("#id-"+i), inp=card.querySelector("input"), val=norm(inp.value);
+  if(!val){ inp.focus(); return; }
+  const ok = ID[i][1].some(a=>norm(a)===val);
+  state.id[i]=ok; inp.disabled=true; card.querySelector(".btn").disabled=true;
+  inp.classList.add(ok?"correct":"wrong");
+  const fb=card.querySelector(".fb"); fb.className="fb show "+(ok?"ok":"no");
+  fb.innerHTML = ok ? "✓ Correct!" : `✗ Wrong. Correct answer: <b>${esc(ID[i][2])}</b>`;
+  refreshCount("id");
+}
+
+function renderTF(){
+  $("#s-tf").innerHTML = bar("tf") + TF.map((q,i)=>`
+    <div class="q" id="tf-${i}"><span class="t">True or False</span>
+    <p class="tx"><b>${i+1}.</b> ${esc(q[0])}</p>
+    <div class="tf"><button class="opt" data-i="${i}" data-v="1">True</button><button class="opt" data-i="${i}" data-v="0">False</button></div>
+    <div class="fb"></div></div>`).join("");
+  document.querySelectorAll("#s-tf .opt").forEach(b=>b.onclick=()=>answerTF(+b.dataset.i,b.dataset.v==="1"));
+  refreshCount("tf");
+}
+function answerTF(i,v){
+  if(i in state.tf) return;
+  const [,ans,why]=TF[i], ok=v===ans, card=$("#tf-"+i);
+  state.tf[i]=ok;
+  card.querySelectorAll(".opt").forEach(b=>{
+    b.disabled=true; const bv=b.dataset.v==="1";
+    if(bv===ans) b.classList.add("correct"); else if(bv===v) b.classList.add("wrong");
+  });
+  const fb=card.querySelector(".fb"); fb.className="fb show "+(ok?"ok":"no");
+  fb.innerHTML = (ok ? "✓ Correct! " : `✗ Wrong. Correct answer: <b>${ans?"True":"False"}</b>. `) + esc(why);
+  refreshCount("tf");
+}
+
+function renderKey(){
+  $("#s-key").innerHTML = `
+  <h3>Multiple Choice (1–40)</h3><ol>${MCQ.map((q,i)=>`<li><span>${i+1}.</span><span><b>${L[q[2]]}. ${esc(q[1][q[2]])}</b><span class="qq">${esc(q[0])}</span></span></li>`).join("")}</ol>
+  <h3>Identification (1–15)</h3><ol>${ID.map((q,i)=>`<li><span>${i+1}.</span><span><b>${esc(q[2])}</b><span class="qq">${esc(q[0])}</span></span></li>`).join("")}</ol>
+  <h3>True or False (1–20)</h3><ol>${TF.map((q,i)=>`<li><span>${i+1}.</span><span><b>${q[1]?"TRUE":"FALSE"}</b> — ${esc(q[2])}<span class="qq">${esc(q[0])}</span></span></li>`).join("")}</ol>`;
+}
+
+function resetSec(k){ state[k]={}; ({mcq:renderMCQ,id:renderID,tf:renderTF})[k](); window.scrollTo({top:0}); }
+
+let current="mcq";
+function show(k){
+  current=k;
+  document.querySelectorAll(".sec").forEach(s=>s.classList.remove("on"));
+  $("#s-"+k).classList.add("on");
+  updateNav(); window.scrollTo({top:0});
+}
+renderMCQ(); renderID(); renderTF(); renderKey(); show("mcq");
+</script>
+</body>
+</html>
